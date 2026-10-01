@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Veículos — Estacionamento</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+          --black: #0a0a0b;
+          --charcoal: #17171a;
+          --paper: #e7e3d8;
+          --paper-shadow: #cfcabd;
+          --ink: #16161a;
+          --smoke: #8a887f;
+          --fog: #b7b4a9;
+          --line: #2c2c30;
+          --glow: #d9b56a;
+        }
+
+        *{ box-sizing:border-box; }
+
+        html,body{
+          height:100%;
+          margin:0;
+          background:var(--black);
+          font-family:'Crimson Pro', serif;
+          color:var(--fog);
+          overflow-x:hidden;
+        }
+
+        .stage{
+          position:relative;
+          min-height:100vh;
+          display:flex;
+          align-items:flex-start;
+          justify-content:center;
+          padding:6vh 5vw;
+          isolation:isolate;
+        }
+
+        .stage::before{
+          content:"";
+          position:fixed;
+          inset:0;
+          background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>");
+          mix-blend-mode:overlay;
+          pointer-events:none;
+          z-index:5;
+        }
+
+        .spotlight{
+          position:fixed;
+          inset:0;
+          background:radial-gradient(
+            480px 480px at var(--mx,50%) var(--my,30%),
+            rgba(217,181,106,.10),
+            rgba(217,181,106,.03) 40%,
+            rgba(0,0,0,0) 65%
+          );
+          pointer-events:none;
+          z-index:3;
+          transition:background .15s ease-out;
+        }
+
+        .content{
+          position:relative;
+          z-index:10;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          width:100%;
+          max-width:760px;
+        }
+
+        .mark{
+          text-align:center;
+          margin-bottom:34px;
+        }
+
+        .mark .kicker{
+          display:block;
+          font-family:'Crimson Pro', serif;
+          font-style:italic;
+          font-size:14px;
+          letter-spacing:.04em;
+          color:var(--smoke);
+          margin-bottom:6px;
+        }
+
+        .mark h1{
+          font-family:'Bebas Neue', sans-serif;
+          font-weight:400;
+          font-size:clamp(40px, 8vw, 58px);
+          letter-spacing:.06em;
+          color:#efece4;
+          margin:0;
+          line-height:.95;
+        }
+
+        .mark .rule{
+          width:64px;
+          height:2px;
+          background:var(--glow);
+          margin:14px auto 0;
+          opacity:.75;
+        }
+
+        .card{
+          position:relative;
+          width:100%;
+          background:var(--paper);
+          color:var(--ink);
+          border:1px solid var(--ink);
+          padding:36px 34px 30px;
+        }
+
+        .clip{
+          position:absolute;
+          top:-16px;
+          left:28px;
+          width:34px;
+          height:46px;
+          border:3px solid #2a2a2a;
+          border-bottom:none;
+          border-radius:6px 6px 0 0;
+          transform:rotate(-8deg);
+        }
+
+        .clip::after{
+          content:"";
+          position:absolute;
+          left:-3px;
+          right:-3px;
+          bottom:-3px;
+          height:3px;
+          background:#2a2a2a;
+        }
+
+        .card-head{
+          display:flex;
+          align-items:baseline;
+          justify-content:space-between;
+          gap:16px;
+          margin-bottom:26px;
+        }
+
+        .card h2{
+          font-family:'Bebas Neue', sans-serif;
+          font-weight:400;
+          font-size:22px;
+          letter-spacing:.08em;
+          margin:0 0 4px;
+        }
+
+        .card p.sub{
+          margin:0;
+          font-size:15px;
+          color:#5a584f;
+          font-style:italic;
+        }
+
+        .back-link{
+          font-family:'Crimson Pro', serif;
+          font-size:14px;
+          font-style:italic;
+          color:#3a3833;
+          text-decoration:none;
+          border-bottom:1px solid #9a978a;
+          white-space:nowrap;
+        }
+
+        .back-link:hover{
+          color:var(--ink);
+        }
+
+        table{
+          width:100%;
+          border-collapse:collapse;
+          font-size:15px;
+        }
+
+        thead th{
+          text-align:left;
+          font-family:'Bebas Neue', sans-serif;
+          font-weight:400;
+          font-size:13px;
+          letter-spacing:.08em;
+          color:#5a584f;
+          border-bottom:1.5px solid var(--ink);
+          padding:0 10px 10px 0;
+        }
+
+        tbody td{
+          padding:12px 10px 12px 0;
+          border-bottom:1px solid var(--paper-shadow);
+          vertical-align:top;
+        }
+
+        tbody tr:last-child td{
+          border-bottom:none;
+        }
+
+        .placa{
+          font-family:'Bebas Neue', sans-serif;
+          letter-spacing:.06em;
+          font-size:16px;
+        }
+
+        .muted{
+          color:#7a776c;
+          font-size:13px;
+        }
+
+        .empty{
+          text-align:center;
+          padding:30px 10px;
+          font-style:italic;
+          color:#5a584f;
+        }
+
+        .table-wrap{
+          overflow-x:auto;
+        }
+
+        .btn-retirar{
+          padding:7px 14px;
+          background:transparent;
+          color:#8a3b2c;
+          border:1.5px solid #8a3b2c;
+          font-family:'Bebas Neue', sans-serif;
+          font-size:12.5px;
+          letter-spacing:.06em;
+          cursor:pointer;
+          white-space:nowrap;
+          transition:background .15s ease, color .15s ease;
+        }
+
+        .btn-retirar:hover{
+          background:#8a3b2c;
+          color:#efece4;
+        }
+
+        @media (max-width:600px){
+          .card{ padding:26px 18px 22px; }
+          table{ font-size:13.5px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="spotlight" id="spotlight"></div>
+
+<div class="stage">
+
+    <div class="content">
+
+        <div class="mark">
+            <span class="kicker">Central de operações</span>
+            <h1>Veículos</h1>
+            <div class="rule"></div>
+        </div>
+
+        <div class="card">
+
+            <div class="clip"></div>
+
+            <div class="card-head">
+                <div>
+                    <h2>Veículos no pátio</h2>
+                    <p class="sub">Lista de veículos registrados.</p>
+                </div>
+                <a class="back-link" href="/veiculo/registrar-entrada">+ Registrar entrada</a>
+            </div>
+
+            <div class="table-wrap">
+                <table th:if="${veiculos != null and !veiculos.isEmpty()}">
+                    <thead>
+                    <tr>
+                        <th>Placa</th>
+                        <th>Modelo</th>
+                        <th>Cor</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Status</th>
+                        <th>Observações</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="v : ${veiculos}">
+                        <td class="placa" th:text="${v.placa}">ABC-1234</td>
+                        <td th:text="${v.modelo}">Modelo</td>
+                        <td th:text="${v.cor}">Cor</td>
+                        <td class="muted">
+                            <span th:if="${v.horaEntrada != null}" th:text="${#temporals.format(v.horaEntrada, 'dd/MM/yyyy HH:mm')}">01/01/2026 00:00</span>
+                            <span th:unless="${v.horaEntrada != null}">—</span>
+                        </td>
+                        <td class="muted">
+                            <span th:if="${v.horarioSaida != null}" th:text="${#temporals.format(v.horarioSaida, 'dd/MM/yyyy HH:mm')}">01/01/2026 00:00</span>
+                            <span th:unless="${v.horarioSaida != null}">—</span>
+                        </td>
+                        <td>
+                            <span th:if="${v.status}">No pátio</span>
+                            <span th:unless="${v.status}">Saiu</span>
+                        </td>
+                        <td class="muted">
+                            <span th:if="${v.observacoes != null and !v.observacoes.isEmpty()}" th:text="${v.observacoes}">Observação</span>
+                            <span th:unless="${v.observacoes != null and !v.observacoes.isEmpty()}">—</span>
+                        </td>
+                        <td>
+                            <form th:if="${v.status}" method="post" th:action="@{/veiculo/retirar/{id}(id=${v.id})}" onsubmit="return confirm('Retirar este veículo do pátio?');">
+                                <button type="submit" class="btn-retirar">Retirar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <p class="empty" th:if="${veiculos == null or veiculos.isEmpty()}">
+                    Nenhum veículo registrado até o momento.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const spotlight = document.getElementById('spotlight');
+
+    const reduceMotion =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if(!reduceMotion){
+      window.addEventListener('mousemove', (e)=>{
+        const xPct = (e.clientX / window.innerWidth) * 100;
+        const yPct = (e.clientY / window.innerHeight) * 100;
+        spotlight.style.setProperty('--mx', xPct + '%');
+        spotlight.style.setProperty('--my', yPct + '%');
+      });
+    }
+</script>
+
+</body>
+</html>

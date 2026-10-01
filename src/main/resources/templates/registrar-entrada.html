@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastrar Veículo — Estacionamento</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+          --black: #0a0a0b;
+          --charcoal: #17171a;
+
+
+
+          --paper: #e7e3d8;
+          --paper-shadow: #cfcabd;
+          --ink: #16161a;
+          --smoke: #8a887f;
+          --fog: #b7b4a9;
+          --line: #2c2c30;
+          --glow: #d9b56a;
+        }
+
+        *{
+          box-sizing:border-box;
+        }
+
+        html,body{
+          height:100%;
+          margin:0;
+          background:var(--black);
+          font-family:'Crimson Pro', serif;
+          color:var(--fog);
+          overflow-x:hidden;
+        }
+
+        .stage{
+          position:relative;
+          min-height:100vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding:6vh 5vw;
+          isolation:isolate;
+        }
+
+        .stage::before{
+          content:"";
+          position:fixed;
+          inset:0;
+          background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>");
+          mix-blend-mode:overlay;
+          pointer-events:none;
+          z-index:5;
+        }
+
+        .spotlight{
+          position:fixed;
+          inset:0;
+          background:radial-gradient(
+            480px 480px at var(--mx,50%) var(--my,30%),
+            rgba(217,181,106,.10),
+            rgba(217,181,106,.03) 40%,
+            rgba(0,0,0,0) 65%
+          );
+          pointer-events:none;
+          z-index:3;
+          transition:background .15s ease-out;
+        }
+
+
+
+        .content{
+          position:relative;
+          z-index:10;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          width:100%;
+          max-width:460px;
+        }
+
+        .mark{
+          text-align:center;
+          margin-bottom:34px;
+        }
+
+        .mark .kicker{
+          display:block;
+          font-family:'Crimson Pro', serif;
+          font-style:italic;
+          font-size:14px;
+          letter-spacing:.04em;
+          color:var(--smoke);
+          margin-bottom:6px;
+        }
+
+        .mark h1{
+          font-family:'Bebas Neue', sans-serif;
+          font-weight:400;
+          font-size:clamp(40px, 8vw, 58px);
+          letter-spacing:.06em;
+          color:#efece4;
+          margin:0;
+          line-height:.95;
+          animation:flicker 1.8s steps(1,end) 1;
+        }
+
+        .mark .rule{
+          width:64px;
+          height:2px;
+          background:var(--glow);
+          margin:14px auto 0;
+          opacity:.75;
+        }
+
+        @keyframes flicker{
+          0%{ opacity:0; }
+          6%{ opacity:1; }
+          9%{ opacity:.25; }
+          12%{ opacity:1; }
+          20%{ opacity:.4; }
+          24%{ opacity:1; }
+          100%{ opacity:1; }
+        }
+
+        .card{
+          position:relative;
+          width:100%;
+          background:var(--paper);
+          color:var(--ink);
+          border:1px solid var(--ink);
+          padding:40px 34px 30px;
+          transform:rotate(-.35deg);
+        }
+
+        .clip{
+          position:absolute;
+          top:-16px;
+          left:28px;
+          width:34px;
+          height:46px;
+          border:3px solid #2a2a2a;
+          border-bottom:none;
+          border-radius:6px 6px 0 0;
+          transform:rotate(-8deg);
+        }
+
+        .clip::after{
+          content:"";
+          position:absolute;
+          left:-3px;
+          right:-3px;
+          bottom:-3px;
+          height:3px;
+          background:#2a2a2a;
+        }
+
+        .card h2{
+          font-family:'Bebas Neue', sans-serif;
+          font-weight:400;
+          font-size:22px;
+          letter-spacing:.08em;
+          margin:0 0 4px;
+        }
+
+        .card p.sub{
+          margin:0 0 26px;
+          font-size:15px;
+          color:#5a584f;
+          font-style:italic;
+        }
+
+        .field{
+          position:relative;
+          margin-bottom:26px;
+        }
+
+        .field input{
+          width:100%;
+          border:none;
+          border-bottom:1.5px solid #9a978a;
+          background:transparent;
+          padding:10px 2px 8px;
+          font-family:'Crimson Pro', serif;
+          font-size:17px;
+          color:var(--ink);
+          outline:none;
+        }
+
+        .field label{
+          position:absolute;
+          left:2px;
+          top:11px;
+          font-size:17px;
+          color:#6f6c60;
+          pointer-events:none;
+          transition:
+            transform .18s ease,
+            font-size .18s ease,
+            color .18s ease;
+          transform-origin:left top;
+        }
+
+        .field input:focus + label,
+        .field input:not(:placeholder-shown) + label{
+          transform:translateY(-20px);
+          font-size:12.5px;
+          letter-spacing:.03em;
+          color:#3a3833;
+        }
+
+        .field .underline{
+          position:absolute;
+          left:0;
+          right:0;
+          bottom:0;
+          height:2px;
+          background:var(--ink);
+          transform:scaleX(0);
+          transform-origin:left;
+          transition:transform .3s ease;
+        }
+
+        .field input:focus ~ .underline{
+          transform:scaleX(1);
+        }
+
+        button{
+          width:100%;
+          padding:13px 18px;
+          margin-top:6px;
+          background:var(--ink);
+          color:var(--paper);
+          border:none;
+          font-family:'Bebas Neue', sans-serif;
+          font-size:18px;
+          letter-spacing:.1em;
+          cursor:pointer;
+          position:relative;
+          overflow:hidden;
+          transition:
+            transform .12s ease,
+            background .2s ease;
+        }
+
+        button:hover{
+          background:#2c2b26;
+        }
+
+        button:active{
+          transform:translateY(2px);
+        }
+
+        .ripple{
+          position:absolute;
+          border-radius:50%;
+          background:rgba(231,227,216,.45);
+          transform:scale(0);
+          animation:ripple .55s ease-out forwards;
+          pointer-events:none;
+        }
+
+        @keyframes ripple{
+          to{ transform:scale(3.2); opacity:0; }
+        }
+
+        .case-no{
+          position:absolute;
+          bottom:-26px;
+          right:0;
+          font-size:11px;
+          letter-spacing:.08em;
+          color:#4a4842;
+        }
+
+        @media (prefers-reduced-motion: reduce){
+          .mark h1{ animation:none; }
+        }
+
+        @media (max-width:420px){
+          .card{ padding:32px 22px 26px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="spotlight" id="spotlight"></div>
+
+
+<div class="stage">
+
+    <div class="content">
+
+        <div class="mark">
+            <span class="kicker">Registro de veículo</span>
+            <h1>Cadastrar</h1>
+            <div class="rule"></div>
+        </div>
+
+        <div class="card">
+
+            <div class="clip"></div>
+
+            <h2>Dados do veículo</h2>
+
+            <p class="sub">
+                Preencha as informações abaixo para registrar.
+            </p>
+
+            <form method="post" action="/veiculo/cadastrar">
+
+                <div class="field">
+                    <input type="text" id="placa" name="placa" placeholder=" " required>
+                    <label for="placa">Placa</label>
+                    <span class="underline"></span>
+                </div>
+
+                <div class="field">
+                    <input type="text" id="modelo" name="modelo" placeholder=" " required>
+                    <label for="modelo">Modelo</label>
+                    <span class="underline"></span>
+                </div>
+
+                <div class="field">
+                    <input type="text" id="cor" name="cor" placeholder=" " required>
+                    <label for="cor">Cor</label>
+                    <span class="underline"></span>
+                </div>
+
+                <div class="field">
+                    <input type="text" id="observacoes" name="observacoes" placeholder=" ">
+                    <label for="observacoes">Observações</label>
+                    <span class="underline"></span>
+                </div>
+
+                <button type="submit">
+                    Enviar
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const spotlight = document.getElementById('spotlight');
+
+    const reduceMotion =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if(!reduceMotion){
+      window.addEventListener('mousemove', (e)=>{
+        const xPct = (e.clientX / window.innerWidth) * 100;
+        const yPct = (e.clientY / window.innerHeight) * 100;
+        spotlight.style.setProperty('--mx', xPct + '%');
+        spotlight.style.setProperty('--my', yPct + '%');
+      });
+    }
+
+    document
+      .querySelectorAll('button[type="submit"]')
+      .forEach((btn)=>{
+        btn.addEventListener('click', function(e){
+          const rect = btn.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.className = 'ripple';
+          const size = Math.max(rect.width, rect.height);
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+          ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+          btn.appendChild(ripple);
+          setTimeout(()=>{ ripple.remove(); }, 600);
+        });
+      });
+
+</script>
+
+</body>
+</html>
