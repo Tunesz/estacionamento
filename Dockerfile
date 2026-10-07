@@ -2,10 +2,10 @@ FROM eclipse-temurin:25-jdk AS build
 
 WORKDIR /app
 
-# CORREÇÃO: Copia TODOS os arquivos do projeto (incluindo mvnw, pom.xml e a pasta src)
+# Copia TODOS os arquivos do projeto para o container (incluindo o mvnw)
 COPY . .
 
-# Agora o mvnw existe no container e o comando vai funcionar perfeitamente
+# Executa a limpeza e compilação do projeto com o Maven Wrapper (mvnw)
 RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
