@@ -1,10 +1,456 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>cadastro-sucess</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastro realizado — Estacionamento</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+          --black: #0a0a0b;
+          --charcoal: #17171a;
+
+          --paper: #e7e3d8;
+          --paper-shadow: #cfcabd;
+          --ink: #16161a;
+          --smoke: #8a887f;
+          --fog: #b7b4a9;
+          --line: #2c2c30;
+          --glow: #d9b56a;
+        }
+
+        *{
+          box-sizing:border-box;
+        }
+
+        html,body{
+          height:100%;
+          margin:0;
+          background:var(--black);
+          font-family:'Crimson Pro', serif;
+          color:var(--fog);
+          overflow-x:hidden;
+        }
+
+        .stage{
+          position:relative;
+          min-height:100vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding:6vh 5vw;
+          isolation:isolate;
+        }
+
+        .stage::before{
+          content:"";
+          position:fixed;
+          inset:0;
+          background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>");
+          mix-blend-mode:overlay;
+          pointer-events:none;
+          z-index:5;
+        }
+
+        .spotlight{
+          position:fixed;
+          inset:0;
+          background:radial-gradient(
+            480px 480px at var(--mx,50%) var(--my,30%),
+            rgba(217,181,106,.10),
+            rgba(217,181,106,.03) 40%,
+            rgba(0,0,0,0) 65%
+          );
+          pointer-events:none;
+          z-index:3;
+          transition:background .15s ease-out;
+        }
+
+
+
+
+
+
+
+        .content{
+          position:relative;
+          z-index:10;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          width:100%;
+          max-width:420px;
+        }
+
+        .mark{
+          text-align:center;
+          margin-bottom:34px;
+        }
+
+        .mark .kicker{
+          display:block;
+          font-style:italic;
+          font-size:14px;
+          letter-spacing:.04em;
+          color:var(--smoke);
+          margin-bottom:6px;
+        }
+
+        .mark h1{
+          font-family:'Bebas Neue', sans-serif;
+          font-weight:400;
+          font-size:clamp(40px, 8vw, 58px);
+          letter-spacing:.06em;
+          color:#efece4;
+          margin:0;
+          line-height:.95;
+          animation:flicker 1.8s steps(1,end) 1;
+        }
+
+        .mark .rule{
+          width:64px;
+          height:2px;
+          background:var(--glow);
+          margin:14px auto 0;
+          opacity:.75;
+        }
+
+        @keyframes flicker{
+          0%{ opacity:0; }
+          6%{ opacity:1; }
+          9%{ opacity:.25; }
+          12%{ opacity:1; }
+          20%{ opacity:.4; }
+          24%{ opacity:1; }
+          100%{ opacity:1; }
+        }
+
+        .card{
+          position:relative;
+          width:100%;
+          background:var(--paper);
+          color:var(--ink);
+          border:1px solid var(--ink);
+          box-shadow:10px 10px 0 rgba(0,0,0,.55);
+          padding:40px 34px 30px;
+          text-align:center;
+          transform:rotate(-.35deg);
+          animation:drop .6s cubic-bezier(.2,.8,.2,1) both;
+        }
+
+        @keyframes drop{
+          from{
+            opacity:0;
+            transform:translateY(-18px) rotate(-2deg);
+          }
+          to{
+            opacity:1;
+            transform:translateY(0) rotate(-.35deg);
+          }
+        }
+
+        .clip{
+          position:absolute;
+          top:-16px;
+          left:28px;
+          width:34px;
+          height:46px;
+          border:3px solid #2a2a2a;
+          border-bottom:none;
+          border-radius:6px 6px 0 0;
+          transform:rotate(-8deg);
+        }
+
+        .clip::after{
+          content:"";
+          position:absolute;
+          left:-3px;
+          right:-3px;
+          bottom:-3px;
+          height:3px;
+          background:#2a2a2a;
+        }
+
+        /* carimbo de aprovado */
+        .stamp{
+          width:92px;
+          height:92px;
+          margin:0 auto 18px;
+          border:3px solid var(--ink);
+          border-radius:50%;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          position:relative;
+          transform:rotate(-8deg);
+          animation:stamp .5s cubic-bezier(.3,1.6,.5,1) .35s both;
+        }
+
+        .stamp::before{
+          content:"";
+          position:absolute;
+          inset:5px;
+          border:1px dashed var(--ink);
+          border-radius:50%;
+        }
+
+        .stamp svg{
+          width:46px;
+          height:46px;
+          fill:none;
+          stroke:var(--ink);
+          stroke-width:5;
+          stroke-linecap:round;
+          stroke-linejoin:round;
+        }
+
+        .stamp svg path{
+          stroke-dasharray:60;
+          stroke-dashoffset:60;
+          animation:draw .5s ease-out .8s forwards;
+        }
+
+        @keyframes stamp{
+          from{
+            opacity:0;
+            transform:scale(2.2) rotate(-20deg);
+          }
+          to{
+            opacity:1;
+            transform:scale(1) rotate(-8deg);
+          }
+        }
+
+        @keyframes draw{
+          to{ stroke-dashoffset:0; }
+        }
+
+        .card h2{
+          font-family:'Bebas Neue', sans-serif;
+          font-weight:400;
+          font-size:28px;
+          letter-spacing:.08em;
+          margin:0 0 6px;
+        }
+
+        .card p.sub{
+          margin:0 0 24px;
+          font-size:16px;
+          color:#5a584f;
+          font-style:italic;
+          line-height:1.4;
+        }
+
+        /* picote de ticket */
+        .perf{
+          position:relative;
+          border:none;
+          border-top:2px dashed #9a978a;
+          margin:0 -34px 22px;
+        }
+
+        .perf::before,
+        .perf::after{
+          content:"";
+          position:absolute;
+          top:-11px;
+          width:20px;
+          height:20px;
+          border-radius:50%;
+          background:var(--black);
+        }
+
+        .perf::before{ left:-11px; }
+        .perf::after{ right:-11px; }
+
+        .steps{
+          list-style:none;
+          margin:0 0 26px;
+          padding:0;
+          text-align:left;
+          font-size:15.5px;
+          color:#3a3833;
+        }
+
+        .steps li{
+          display:flex;
+          gap:12px;
+          align-items:baseline;
+          padding:5px 0;
+        }
+
+        .steps b{
+          font-family:'Bebas Neue', sans-serif;
+          font-weight:400;
+          font-size:17px;
+          letter-spacing:.08em;
+          color:var(--ink);
+          min-width:18px;
+        }
+
+        .btn{
+          display:block;
+          width:100%;
+          padding:13px 18px;
+          background:var(--ink);
+          color:var(--paper);
+          text-decoration:none;
+          font-family:'Bebas Neue', sans-serif;
+          font-size:18px;
+          letter-spacing:.1em;
+          position:relative;
+          overflow:hidden;
+          transition:
+            transform .12s ease,
+            background .2s ease;
+        }
+
+        .btn:hover{
+          background:#2c2b26;
+        }
+
+        .btn:active{
+          transform:translateY(2px);
+        }
+
+        .ripple{
+          position:absolute;
+          border-radius:50%;
+          background:rgba(231,227,216,.45);
+          transform:scale(0);
+          animation:ripple .55s ease-out forwards;
+          pointer-events:none;
+        }
+
+        @keyframes ripple{
+          to{
+            transform:scale(3.2);
+            opacity:0;
+          }
+        }
+
+        .case-no{
+          margin-top:18px;
+          font-size:11px;
+          letter-spacing:.08em;
+          color:#4a4842;
+        }
+
+        @media (prefers-reduced-motion: reduce){
+          .mark h1,
+          .card,
+          .stamp,
+          .stamp svg path{
+            animation:none;
+          }
+
+          .stamp svg path{
+            stroke-dashoffset:0;
+          }
+        }
+
+        @media (max-width:420px){
+          .card{
+            padding:32px 22px 26px;
+          }
+
+          .perf{
+            margin:0 -22px 22px;
+          }
+
+
+
+        }
+    </style>
 </head>
+
 <body>
-<h2>Cadastro realizado com sucesso</h2>
+
+<div class="spotlight" id="spotlight"></div>
+
+
+
+<div class="stage">
+
+    <div class="content">
+
+        <div class="mark">
+            <span class="kicker">Controle de acesso</span>
+            <h1>Estacionamento</h1>
+            <div class="rule"></div>
+        </div>
+
+        <div class="card">
+
+            <div class="clip"></div>
+
+            <div class="stamp" aria-hidden="true">
+                <svg viewBox="0 0 48 48">
+                    <path d="M10 25 L20 35 L38 13"/>
+                </svg>
+            </div>
+
+            <h2>Cadastro realizado com sucesso</h2>
+
+            <p class="sub">
+                Sua conta foi criada. Você já pode acessar o sistema.
+            </p>
+
+            <hr class="perf">
+
+            <ul class="steps">
+                <li><b>1</b> Entre com seu e-mail e senha.</li>
+                <li><b>2</b> Cadastre seu veículo no painel.</li>
+                <li><b>3</b> Registre entradas e saídas quando precisar.</li>
+            </ul>
+
+            <a class="btn" href="/">Entrar</a>
+
+        </div>
+
+        <span class="case-no">Cadastro concluído</span>
+
+    </div>
+
+</div>
+
+<script>
+
+    const spotlight = document.getElementById('spotlight');
+
+    const reduceMotion =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if(!reduceMotion){
+      window.addEventListener('mousemove', (e)=>{
+        const xPct = (e.clientX / window.innerWidth) * 100;
+        const yPct = (e.clientY / window.innerHeight) * 100;
+        spotlight.style.setProperty('--mx', xPct + '%');
+        spotlight.style.setProperty('--my', yPct + '%');
+      });
+    }
+
+    document
+      .querySelectorAll('.btn')
+      .forEach((btn)=>{
+        btn.addEventListener('click', function(e){
+          const rect = btn.getBoundingClientRect();
+          const ripple = document.createElement('span');
+          ripple.className = 'ripple';
+          const size = Math.max(rect.width, rect.height);
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+          ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+          btn.appendChild(ripple);
+          setTimeout(()=>{ ripple.remove(); }, 600);
+        });
+      });
+
+</script>
+
 </body>
 </html>
