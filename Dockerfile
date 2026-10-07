@@ -3,7 +3,7 @@ FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
 
 # Copia todos os ficheiros do projeto para o contentor
-COPY . .
+COPY src/main/resources/templates .
 
 # Executa a limpeza e compilação do projeto com o Maven Wrapper (mvnw)
 RUN chmod +x mvnw
